@@ -9,26 +9,26 @@
 Рабочую локальную БД и таблицы я поднял за 2 команды в терминале:
 
 
-Все скриншоты с выполненными командами и результатами работы лежат по пути: 
-`ADO.NET/conspect/conspect for 29.10/screenshots for 29.10/`
+**Все скриншоты с выполненными командами и результатами работы лежат по пути: 
+`ADO.NET/conspect/conspect for 29.10/screenshots for 29.10/`**
 
 
 **Запуск контейнера с базой данных:**
-   ```
+```
    docker run --name tasktracker-db -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=tasktracker -p 5433:5432 -d postgres:16
-    ```
-(Примечание: я использовал в строке подключения в appsettings.json порт 5433, так как стандартный 5432 был занят локальным PostgreSQL).
+```
+**(Примечание: я использовал в строке подключения в appsettings.json порт 5433, так как стандартный 5432 был занят локальным PostgreSQL).**
 
 Создание таблиц из файла Schema.sql:
 
- ```
+```
 docker exec -i tasktracker-db psql -U postgres -d tasktracker < Data\Schema.sql
 Проверка, что таблицы создались:
 
 docker exec -it tasktracker-db psql -U postgres -d tasktracker -c "\dt"
- ```
+```
 
-Структура проекта
+**Структура проекта**
 
  ```
 TaskTracker/
@@ -47,7 +47,9 @@ TaskTracker/
     ├── ProjectRepository.cs
     ├── TaskRepository.cs
     └── UserRepository.cs
-     ```
+
+```
+
 ### Что было сделано по шагам
 1. Развертывание и настройка
 Поднял БД в Docker, настроил строку подключения и фабрику IDbConnectionFactory. Включил MatchNamesWithUnderscores = true для автоматического маппинга snake_case из БД в PascalCase C#.
