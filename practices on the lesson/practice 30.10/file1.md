@@ -164,12 +164,29 @@ curl.exe http://localhost:8080/parallel
 
 ### Что в итоге вывелось:
 
-Запросы выполнились и параллельности есть на скриншоте, но elapsedMs: 0 - потому что на 2 строках в таблицах COUNT выполняется меньше миллисекунды, и Stopwatch возвращает 0 (он округляет до целых). Параллельность видна архитектурно: два соединения, две команды и Task.WhenAll и если бы делал await t1; await t2; - было бы то же самое по времени, но это уже последовательно, а не параллельно
 
+Три GET-эндпоинта открыл в браузере - все отвечают 200 с ожидаемыми данными: /parallel показал параллельные COUNT с замером, /employees — Dapper-выборку с JOIN, /employees/table — DataSet-отчёт с фильтрацией через Select. Четвёртый /raise — POST, поэтому проверял через curl, не открывается из адресной строки
 
-<img width="477" height="157" alt="3" src="https://github.com/user-attachments/assets/8260ccbc-add3-4f2d-b698-c5c124f4bf04" />
+**http://localhost:8080/parallel**. Тут elapsedMs: 0 - потому что на 2 строках в таблицах COUNT выполняется меньше миллисекунды, и Stopwatch возвращает 0 (он округляет до целых). Параллельность видна архитектурно: два соединения, две команды и Task.WhenAll и если бы делал await t1; await t2; - было бы то же самое по времени, но это уже последовательно, а не параллельно
+- <img width="477" height="157" alt="3" src="https://github.com/user-attachments/assets/8260ccbc-add3-4f2d-b698-c5c124f4bf04" />
 
+**http://localhost:8080/employees** - тут массив из двух объектов. Каждый - сотрудник с полями id, name, salary, department.
+Откуда: conn.QueryAsync<Employee> с JOIN employees + departments. Dapper сам разложил колонки SQL на свойства record'а Employee.
 
+- <img width="1223" height="171" alt="6767" src="https://github.com/user-attachments/assets/f244ab4e-49a4-493a-a3d7-261d2e411acb" />
+
+  
+**http://localhost:8080/employees/table**
+- <img width="1071" height="131" alt="23" src="https://github.com/user-attachments/assets/31e6fa68-8656-4f99-8aad-214b94e25829" />
+
+Что это:
+- total: 2 — сколько строк в DataTable всего (2 сотрудника).
+
+- all - все строки таблицы (Иван и Мария).
+
+- highPaid - строки, прошедшие фильтр DataTable.Select("salary > 75000"). Иван 80000 → прошёл, Мария 70000 → нет.
+
+- Откуда: NpgsqlDataAdapter.Fill(ds, "employees") → ds.Tables["employees"] → table.Select("salary > 75000").
 
 ## Что осталось / вопросы
 - В конспекте упоминается tx.IsCompleted — в Npgsql 8 его нет, убрал
