@@ -137,6 +137,11 @@ record Raise(int DepId, decimal Delta);
 - Реализовал все 4 эндпоинта (код в `Program.cs`)
 - Проверил curl'ом: все отвечают 200 OK с ожидаемыми данными
 
+
+<img width="1012" height="1372" alt="1" src="https://github.com/user-attachments/assets/d621b873-651c-4b0e-a1c5-cb24fa9944a5" />
+<img width="973" height="1353" alt="2" src="https://github.com/user-attachments/assets/4da9eff3-cafb-4256-ae49-8e206cb5d2d8" />
+
+
 ### Покрытие тем
 | Тема | Где |
 |---|---|
@@ -150,18 +155,19 @@ record Raise(int DepId, decimal Delta);
 | DataSet/DataAdapter/DataTable | /employees/table |
 
 ### Как запустить
-\`\`\`bash
+```
 docker compose down -v
 docker compose up --build
 curl.exe http://localhost:8080/parallel
-...
-\`\`\`
+
+```
 
 ### Что в итоге вывелось:
 
 Запросы выполнились и параллельности есть на скриншоте, но elapsedMs: 0 - потому что на 2 строках в таблицах COUNT выполняется меньше миллисекунды, и Stopwatch возвращает 0 (он округляет до целых). Параллельность видна архитектурно: два соединения, две команды и Task.WhenAll и если бы делал await t1; await t2; - было бы то же самое по времени, но это уже последовательно, а не параллельно
 
-- 
+
+<img width="477" height="157" alt="3" src="https://github.com/user-attachments/assets/8260ccbc-add3-4f2d-b698-c5c124f4bf04" />
 
 
 
